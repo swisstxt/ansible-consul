@@ -204,7 +204,9 @@
           mode: 0644
         when:
           - ansible_service_mgr == "systemd"
-          - not ansible_os_family == "FreeBSD"
+          - not ansible_os_family == "FreeBSD"      - include: ../tasks/backup.yml
+        tags: backup
+        when: consul_backup_enabled | bool
           - not ansible_os_family == "Solaris"
 
       - name: Create smf manifest
@@ -265,11 +267,11 @@
           - consul_node_role == "client"
           - ansible_os_family == "Debian"
 
-      - include: ../tasks/backup.yml
-        tags: backup
-        when: consul_backup_enabled | bool
-
       when: not bootstrap_state.stat.exists
+
+    - include: ../tasks/backup.yml
+      tags: backup
+      when: consul_backup_enabled | bool
 
   when: ansible_os_family != 'Windows'
 

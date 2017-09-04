@@ -7,6 +7,13 @@
     "node_name": "{{ consul_node_name }}",
     "datacenter": "{{ consul_datacenter }}",
     "domain": "{{ consul_domain }}",
+    {% if consul_version | version_compare('0.7.3', '>=') and
+          consul_node_meta | length > 0 %}
+        "node_meta": {
+            {% for _meta_key, _meta_value in consul_node_meta.iteritems() %}
+                "{{ _meta_key }}": "{{ _meta_value }}",
+            {% endfor %} },
+    {% endif %}
 
     {## Addresses ##}
     "bind_addr": "{{ consul_bind_address }}",
@@ -54,6 +61,7 @@
     "data_dir": "{{ consul_data_path }}",
     "log_level": "{{ consul_log_level }}",
     "enable_syslog": {{ consul_syslog_enable | bool | to_json }},
+    "disable_update_check": {{ consul_disable_update_check | bool | to_json }},
     "enable_script_checks": {{ consul_enable_script_checks | bool | to_json }},
 
     {## Encryption and TLS ##}

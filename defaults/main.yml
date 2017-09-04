@@ -173,3 +173,9 @@ consul_dnsmasq_no_resolv: false
 consul_dnsmasq_local_service: false
 consul_dnsmasq_listen_addresses: {}
 consul_iptables_enable: "{{ lookup('env','CONSUL_IPTABLES_ENABLE') | default(false, true) }}"
+
+## Backup
+consul_backupdir: "/backup"
+consul_backup_age: "20" #In Days
+consul_backup_crontab_dir: "/etc/cron.daily"
+consul_backup_enabled: true

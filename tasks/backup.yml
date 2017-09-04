@@ -1,0 +1,8 @@
+---
+- name: Copy Backup Script to daily Crontab directory
+  template:
+    src: consul_backup.sh.j2
+    dest: "{{ consul_backup_crontab_dir }}/consul_backup.sh"
+    owner: "root"
+    group: "root"
+    mode: 0755

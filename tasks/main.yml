@@ -265,6 +265,10 @@
           - consul_node_role == "client"
           - ansible_os_family == "Debian"
 
+      - include: ../tasks/backup.yml
+        tags: backup
+        when: consul_backup_enabled | bool
+
       when: not bootstrap_state.stat.exists
 
   when: ansible_os_family != 'Windows'

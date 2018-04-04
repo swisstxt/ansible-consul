@@ -5,36 +5,30 @@
 [![Average time to resolve an issue](http://isitmaintained.com/badge/resolution/brianshumate/ansible-consul.svg)](http://isitmaintained.com/project/brianshumate/ansible-consul "Average time to resolve an issue")
 [![Percentage of issues still open](http://isitmaintained.com/badge/open/brianshumate/ansible-consul.svg)](http://isitmaintained.com/project/brianshumate/ansible-consul "Percentage of issues still open")
 
-This Ansible role installs [Consul](https://consul.io/), including establishing
-a filesystem structure and server or client agent configuration with support
-for some common operational features.
+This Ansible role installs [Consul](https://consul.io/), including establishing a filesystem structure and server or client agent configuration with support for some common operational features.
 
-It can bootstrap a development or evaluation cluster of 3 server agents running
-in a Vagrant and VirtualBox based environment. See
-[README_VAGRANT.md](https://github.com/brianshumate/ansible-consul/blob/master/examples/README_VAGRANT.md) and the associated [Vagrantfile](https://github.com/brianshumate/ansible-consul/blob/master/examples/Vagrantfile) for more details about the developer mode setup.
+It can bootstrap a development or evaluation cluster of 3 server agents running in a Vagrant and VirtualBox based environment. See [README_VAGRANT.md](https://github.com/brianshumate/ansible-consul/blob/master/examples/README_VAGRANT.md) and the associated [Vagrantfile](https://github.com/brianshumate/ansible-consul/blob/master/examples/Vagrantfile) for more details about the developer mode setup.
 
 > “Another flaw in the human character is that everybody wants to build and nobody wants to do maintenance.”<br>
 > ― Kurt Vonnegut, Hocus Pocus
 
-Please note that this role is more concerned with the initial installation and
-bootstrapping of a running cluster environment and does not currently concern
-itself (all that much) with performing ongoing drif^H^H^H^H *maintenance* of
-an existing cluster.
+Please note that this role is more concerned with the initial installation and bootstrapping of a running cluster environment and does not currently concern itself (all that much) with performing ongoing drif^H^H^H^H *maintenance* of an existing cluster.
 
 Many users have expressed that the Vagrant based environment makes getting a
-working local cluster environment up and running an easy process — so this
-role will target that experience as a primary motivator for existing.
+working local Consul server cluster environment up and running an easy process — so this role will target that experience as a primary motivator for existing.
+
+If you get some mileage from it in other ways, then all the better!
 
 ## Requirements
 
-This role requires FreeBSD, or a Debian or RHEL based Linux distribution or
-Windows Server 2012 R2. It might work with other software versions, but does
-definitely work with the following specific software and versions:
+This role requires a FreeBSD, Debian, or RHEL based Linux distribution or
+Windows Server 2012 R2. It might work with other software versions, but is
+definitely known to work with the following specific software versions:
 
-* Consul: 0.9.2
-* Ansible: 2.3.1.0
+* Consul: 1.0.6
+* Ansible: 2.4.2.0
 * CentOS: 7
-* Debian: 8
+* Debian: 9
 * FreeBSD: 11
 * RHEL: 7
 * Ubuntu: 16.04
@@ -58,7 +52,7 @@ the variables are named and described below:
 ### `consul_version`
 
 - Version to install
-- Default value: *0.9.2*
+- Default value: *1.0.6*
 
 ### `consul_architecture_map`
 
@@ -112,9 +106,35 @@ the variables are named and described below:
 
 ### `consul_log_path`
 
-- Log path (not implemented)
+- Log path for use in rsyslogd configuration on Linux.
 - Default Linux value: `/var/log/consul`
+  - Override with `CONSUL_LOG_PATH` environment variable
 - Default Windows value: `C:\ProgramData\consul\log`
+
+### `consul_log_file`
+
+- Log file for use in rsyslogd configuration on Linux.
+  - Override with `CONSUL_LOG_FILE` environment variable
+- Default Linux value: `consul.log`
+
+### `consul_syslog_facility`
+
+- Syslog facility as defined in [syslog_facility](https://www.consul.io/docs/agent/options.html#syslog_facility)
+  - Override with `CONSUL_SYSLOG_FACILITY` environment variable
+- Default Linux value: *local0*
+
+### `syslog_user`
+
+- Owner of `rsyslogd` process on Linux. `consul_log_path`'s ownership is set to this user on Linux.
+  - Override with `SYSLOG_USER` environment variable
+- Default Linux value: *syslog*
+
+
+### `syslog_group`
+
+- Group of user running `rsyslogd` process on Linux. `consul_log_path`'s group ownership is set to this group on Linux.
+  - Override with `SYSLOG_GROUP` environment variable
+- Default value: *adm*
 
 ### `consul_run_path`
 
@@ -159,6 +179,16 @@ the variables are named and described below:
 - Max reconnection attempts to WAN servers before failing, 0=infinit
 - Default value: *0*
 
+### `consul_join`
+
+- List of LAN servers, not managed by this role, to join (ipv4 ipv6 or dns addresses)
+- Default value: *[]*
+
+### `consul_join_wan`
+
+- List of WAN servers, not managed by this role, to join (ipv4 ipv6 or dns addresses)
+- Default value: *[]*
+
 ### `consul_servers`
 
 It's typically not necessary to manually alter this list.
@@ -169,7 +199,7 @@ It's typically not necessary to manually alter this list.
 
 ### `consul_gather_server_facts`
 
-This feature makes it possible to gather the `consul_bind_address` from
+This feature makes it possible to gather the `consul_advertise_address(_wan)` from
 servers that are currently not targeted by the playbook.
 
 To make this possible the `delegate_facts` option is used; note that his
@@ -448,6 +478,21 @@ ports can be done using the `consul_ports_*` variables.
   - Override with `CONSUL_TLS_SERVER_KEY` environment variable
 - Default value: `server.key`
 
+### `consul_tls_files_remote_src`
+
+- Copy from remote source if TLS files are already on host
+- Default value: 'no'
+
+## `consul_encrypt_enable`
+
+- Enable Gossip Encryption
+- Default value: `true`
+
+## `consul_raw_key`
+
+- Set the encryption key; should be the same across a cluster. If not present the key will be generated & retrieved from the bootstrapped server.
+- Default value: ``
+
 ### `consul_tls_verify_incoming`
 
 - Verify incoming connections
@@ -519,9 +564,9 @@ cluster of 3 servers, the first one being the designated bootstrap / leader:
 
 ```yaml
 [consul_instances]
-consul1.local consul_node_role=bootstrap
-consul2.local consul_node_role=server
-consul3.local consul_node_role=server
+consul1.consul consul_node_role=bootstrap
+consul2.consul consul_node_role=server
+consul3.consul consul_node_role=server
 consul4.local consul_node_role=client
 ```
 
@@ -529,9 +574,9 @@ Or you can use the simpler method of letting them do their election process:
 
 ```yaml
 [consul_instances]
-consul1.local consul_node_role=server consul_bootstrap_expect=true
-consul2.local consul_node_role=server consul_bootstrap_expect=true
-consul3.local consul_node_role=server consul_bootstrap_expect=true
+consul1.consul consul_node_role=server consul_bootstrap_expect=true
+consul2.consul consul_node_role=server consul_bootstrap_expect=true
+consul3.consul consul_node_role=server consul_bootstrap_expect=true
 consul4.local consul_node_role=client
 ```
 
@@ -663,6 +708,27 @@ packages with different package names.
 - List of OS packages to install
 - Default value: list
 
+### `consul_performance`
+
+- List of Consul performance tuning items
+- Default value: list
+
+#### `raft_multiplier`
+
+- [Raft multiplier](https://www.consul.io/docs/agent/options.html#raft_multiplier) scales key Raft timing parameters
+- Default value: 1
+
+#### `leave_drain_time`
+
+- [Node leave drain time](https://www.consul.io/docs/agent/options.html#leave_drain_time) is the dwell time for a server to honor requests while gracefully leaving
+
+- Default value: 5s
+
+#### `rpc_hold_timeout`
+
+- [RPC hold timeout](https://www.consul.io/docs/agent/options.html#rpc_hold_timeout) is the duration that a client or server will retry internal RPC requests during leader elections
+- Default value: 7s
+
 ## Dependencies
 
 Ansible requires GNU tar and this role performs some local use of the
@@ -746,9 +812,9 @@ Then, you can query any of the agents via DNS directly via port 53,
 for example:
 
 ```
-dig @consul1.local consul3.node.consul
+dig @consul1.consul consul3.node.consul
 
-; <<>> DiG 9.8.3-P1 <<>> @consul1.local consul3.node.consul
+; <<>> DiG 9.8.3-P1 <<>> @consul1.consul consul3.node.consul
 ; (1 server found)
 ;; global options: +cmd
 ;; Got answer:
@@ -787,7 +853,7 @@ consul3.node.consul.  0 IN  A 10.1.42.230
 ### `consul_dnsmasq_revservers`
 
 - Reverse lookup subnets
-- Default value: *{}*
+- Default value: *[]*
 
 ### `consul_dnsmasq_no_poll`
 
@@ -807,7 +873,7 @@ consul3.node.consul.  0 IN  A 10.1.42.230
 ### `consul_dnsmasq_listen_addresses`
 
 - Custom list of addresses to listen on.
-- Default value: *{}*
+- Default value: *[]*
 
 
 ### iptables DNS Forwarding Support
@@ -839,7 +905,7 @@ Ansible variable `consul_tls_enable=true` at role runtime.
 
 ### Vagrant and VirtualBox
 
-See `examples/README_VAGRANT.md` for details on quick Vagrant deployments
+See [examples/README_VAGRANT.md](https://github.com/brianshumate/ansible-consul/blob/master/examples/README_VAGRANT.md) for details on quick Vagrant deployments
 under VirtualBox for development, evaluation, testing, etc.
 
 ## License

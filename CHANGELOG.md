@@ -723,7 +723,88 @@ Actually add new template files :facepalm:
 - Prefer retry_join and retry_join_wan instead of start_join / start_join_wan
 - DNSMasq updates (thanks @groggemans)
 
-## v1.25.5 (UNRELEASED)
+## v1.26.0
 
 - Add node_meta config (thanks @groggemans)
 - Add additional retry-join parameters (thanks @groggemans)
+- Add DNSMasq for Red Hat (thanks @giannidallatorre)
+- Fix typo (thanks @vincent-legoll)
+- Allow post setup bootstrapping of ACLs (thanks @groggemans)
+- Add disable_update_check to config options (thanks @groggemans)
+- Fix list example data type (thanks @vincent-legoll)
+- Remove tasks for installation of python-consul (thanks @vincent-legoll)
+
+## v1.26.1
+
+- Fix deprecation notice on include
+- Change example server hostnames
+
+## v1.27.0
+
+- Consul v0.9.3
+- Update server joining (thanks @groggemans)
+- Fix types that should be lists (thanks @vincent-legoll)
+
+## v1.28.0
+
+- Consul 1.0!
+- Fix python3 compatibility for meta data (thanks @groggemans)
+
+## v1.28.1
+
+- Remove deprecated advertise_addrs to resolve #123 so that role works again
+
+## v1.29.0
+
+- Consul v1.0.1
+- Fix idempotency (thanks @issmirnov)
+- Make gossip encryption optional (thanks @hwmrocker)
+- Install netaddr with `--user`
+- Update documentation
+- Update CONTRIBUTORS
+
+## v1.30.0
+
+- Consul v1.0.2
+- Update documentation
+
+## v1.30.1
+
+- Add performance tuning configuration (thanks @t0k4rt)
+  - Set raft multiplier to 1
+- Conditionally install Python dependency baed on virtualenv or --user
+  Addresses https://github.com/brianshumate/ansible-consul/issues/129#issuecomment-356095611
+- Update includes to import_tasks and include_tasks
+- Remove invalid consul_version key from configuration
+- Update Vagrantfile
+  - Set client address to 0.0.0.0 so Vagrant based deploy checks now pass
+- Update documentation
+
+## v1.30.2
+
+- Correct retry_join block (@thanks hwmrocker)
+
+## v1.40.0
+
+- Consul v1.0.3
+- It's 2018!
+- Update configuration
+- Update documentation
+
+## v1.50.0
+
+- Consul v1.0.6
+- Add support for setting syslog facility and syslog file (thanks @ykhemani)
+- Update configuration
+- Update tests
+- Update documentation (thanks also to @ChrisMcKee)
+
+## v1.50.1
+
+- Revert to old style retry_join which doesn't fail in all cases
+
+## v1.60.0 (UNRELEASED)
+
+- Option for TLS files already on the remote host (thanks @calebtonn)
+- Update documentation
+- Raise minimum Ansible version to 2.4.0.0

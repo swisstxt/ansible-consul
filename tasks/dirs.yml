@@ -7,13 +7,12 @@
     state: directory
     owner: "{{ consul_user }}"
     group: "{{ consul_group}}"
-    recurse: yes
+    mode: 0700
   with_items:
     - "{{ consul_config_path }}"
     - "{{ consul_configd_path }}"
     - "{{ consul_data_path }}"
     - "{{ consul_run_path }}"
-    - "{{ consul_configd_path }}"
   when: ansible_os_family != 'Windows'
 
 - name: Create log directory
@@ -22,10 +21,9 @@
     state: directory
     owner: "{{ syslog_user }}"
     group: "{{ syslog_group }}"
-    recurse: yes
   with_items:
     - "{{ consul_log_path }}"
-  when: 
+  when:
     - ansible_os_family != 'Windows'
     - consul_syslog_enable == true
 

@@ -5,36 +5,36 @@
   fail:
     msg: "{{ ansible_distribution }} is not currently supported by this role."
   when:
-    - ansible_distribution not in ['RedHat', 'CentOS', 'Debian', 'FreeBSD', 'SmartOS', 'Ubuntu']
+    - ansible_distribution not in ['RedHat', 'CentOS', 'OracleLinux', 'Debian', 'FreeBSD', 'SmartOS', 'Ubuntu', 'Archlinux', 'Alpine', 'Amazon']
     - ansible_os_family != 'Windows'
 
-- name: Check CentOS or Red Hat version
+- name: Check CentOS, Red Hat or Oracle Linux version
   fail:
     msg: "{{ ansible_distribution_version }} is not a supported version."
   when:
-    - ansible_distribution in ['RedHat', 'CentOS']
-    - ansible_distribution_version | version_compare(6, '<')
+    - ansible_distribution in ['RedHat', 'CentOS', 'OracleLinux']
+    - ansible_distribution_version is version_compare(6, '<')
 
 - name: Check Debian version
   fail:
     msg: "{{ ansible_distribution_version }} is not a supported version."
   when:
     - ansible_distribution == "Debian"
-    - ansible_distribution_version | version_compare(8, '<')
+    - ansible_distribution_version is version_compare(8, '<')
 
 - name: Check FreeBSD version
   fail:
     msg: "{{ ansible_distribution_version }} is not a supported version."
   when:
     - ansible_distribution == "FreeBSD"
-    - ansible_distribution_version | version_compare(10, '<')
+    - ansible_distribution_version is version_compare(10, '<')
 
 - name: Check Ubuntu version
   fail:
     msg: "{{ ansible_distribution_version }} is not a supported version."
   when:
     - ansible_distribution == "Ubuntu"
-    - ansible_distribution_version | version_compare(13.04, '<')
+    - ansible_distribution_version is version_compare(13.04, '<')
 
 - name: Check specified ethernet interface
   fail:
@@ -43,13 +43,13 @@
     - ansible_os_family != 'Windows'
     - consul_iface not in ansible_interfaces
 
-- name: Check iptables on Red Hat or CentOS
+- name: Check iptables on Red Hat, CentOS or Oracle Linux
   fail:
     msg: "Use DNSmasq instead of iptables on {{ ansible_distribution }}."
   when:
     - consul_iptables_enable | bool
-    - ansible_distribution in ['RedHat', 'CentOS']
-    - ansible_distribution_version | version_compare(6, '>=')
+    - ansible_distribution in ['RedHat', 'CentOS', 'OracleLinux']
+    - ansible_distribution_version is version_compare(6, '>=')
 
 - name: Check for both Dnsmasq and iptables enabled
   fail:
@@ -64,6 +64,11 @@
   when:
     - consul_iptables_enable | bool
     - consul_recursors | length == 0
+
+- name: Check consul_group_name is included in groups
+  fail:
+    msg: "consul_group_name must be included in groups."
+  when: consul_group_name not in groups
 
 - name: Fail if more than one bootstrap server is defined
   fail:

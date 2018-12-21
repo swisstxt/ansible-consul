@@ -222,7 +222,7 @@ consul_snapshot_retain: 30
 consul_snapshot_stale: false
 
 ## Backup
-consul_backup_dir: "/backup"
+consul_backup_dir: "/srv/backup"
 consul_backup_age: "20" #In Days
 consul_backup_crontab_dir: "/etc/cron.daily"
 consul_backup_enabled: true

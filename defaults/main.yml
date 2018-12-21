@@ -214,8 +214,16 @@ consul_performance:
   leave_drain_time: 5s
   rpc_hold_timeout: 7s
 
+# Snapshot
+consul_snapshot: false
+consul_snapshot_storage: "{{ consul_config_path }}/snaps"
+consul_snapshot_interval: 1h
+consul_snapshot_retain: 30
+consul_snapshot_stale: false
+
 ## Backup
 consul_backup_dir: "/backup"
 consul_backup_age: "20" #In Days
 consul_backup_crontab_dir: "/etc/cron.daily"
 consul_backup_enabled: true
+

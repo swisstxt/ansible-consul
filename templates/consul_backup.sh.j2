@@ -6,4 +6,4 @@ mkdir -p {{ consul_backup_dir }}
 {{ consul_binary }} snapshot save {{ consul_backup_dir }}/$DATE-{{ consul_node_name }}-backup.snap
 
 # Delete Backups older than X days
-find {{ consul_backup_dir }}/* -mtime +{{ consul_backup_age }} -ls
+find {{ consul_backup_dir }}/* -mtime +{{ consul_backup_age }} -delete

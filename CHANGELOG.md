@@ -1,6 +1,48 @@
-## v2.3.3 (UNRELEASED)
+## v2.3.7 (UNRELEASED)
 
+- That's about enough task cleanup for now
+
+## v2.3.6
+
+- Continue with task cleanup
+- Fix deleting of unregistered services (thanks @Shaiou)
+- Add bool filter to templates (thanks @eeroniemi)
+- Fix CONSUL_ACL_POLICY (thanks @eeroniemi)
+- Correct cleanup task fileglob bogusness
+- Switch to SIGTERM in sysvinit stop
+
+## v2.3.5
+
+- Consul v1.4.4
+- fixed multiarch deployment race condition (thanks @lanefu)
+- Switched from systemctl command to systemd module [lint]
+- Update for E504 use 'delegate_to: localhost' [lint]
+  - asserts
+  - install
+  - encrypt_gossip
+- Update for E104 in with_fileglob for install_remote [lint]
+- Update for E601 in syslog [lint]
+- Update for E602 in tasks [lint]
+  - acl
+  - main
+- Update example site playbook roles format
+- Support install on Debian Testing (thanks @gfeun)
+- Fix consul_bind_address (thanks @danielkucera)
+- Custom bootstrap expect value (thanks @Roviluca)
+- Fix Windows support for registering services (thanks @gyorgynadaban)
+- Update documentation
+
+## v2.3.4
+
+- Consul v1.4.3
+- Update documentation
+
+## v2.3.3
+
+- Add services management (thanks @Sispheor)
 - Add enable_local_script_checks configuration (thanks @canardleteer)
+- Add ability to enable legacy GUI (thanks @imcitius)
+- Optional domain datacenter delegation with `consul_delegate_datacenter_dns`
 
 ## v2.3.2
 
